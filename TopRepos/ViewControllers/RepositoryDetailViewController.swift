@@ -12,10 +12,10 @@ class RepositoryDetailViewController: UIViewController {
     
     fileprivate var viewModel: RepositoryViewModel!
     
-    private let networkService: NetworkService!
+    private let fetchingService: RepositoryFetcher!
     
     private var repeater: Timer?
-    private var repeaterTimeInterval: TimeInterval = 1
+    private var repeaterTimeInterval: TimeInterval = 1000
     
     private let avatarImageView = UIImageView()
     internal let titleLabel = UILabel()
@@ -24,9 +24,9 @@ class RepositoryDetailViewController: UIViewController {
     internal let urlLabel = UILabel()
     internal let languageLabel = UILabel()
     
-    init(viewModel: RepositoryViewModel, networkService: NetworkService) {
+    init(viewModel: RepositoryViewModel, fetchingService: RepositoryFetcher) {
         self.viewModel = viewModel
-        self.networkService =  networkService
+        self.fetchingService =  fetchingService
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -72,7 +72,7 @@ class RepositoryDetailViewController: UIViewController {
     
     private func fetchData() {
         
-        networkService.getRepository(by: viewModel.id) { result in
+        fetchingService.getRepository(by: viewModel.id) { [unowned self] result in
             
             switch result {
             case .success(let repository):

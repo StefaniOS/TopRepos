@@ -14,7 +14,7 @@ class RepositoriesViewController: UIViewController {
     
     fileprivate let cellIdentifier = "cell"
     
-    fileprivate let networkService: NetworkService!
+    fileprivate let fetchingService: RepositoryFetcher!
     
     private var viewModels = [RepositoryViewModel]()
     
@@ -26,8 +26,8 @@ class RepositoriesViewController: UIViewController {
     fileprivate let topLimit = 20
     
     
-    init(networkService: NetworkService) {
-        self.networkService = networkService
+    init(fetchingService: RepositoryFetcher) {
+        self.fetchingService = fetchingService
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -89,11 +89,11 @@ class RepositoriesViewController: UIViewController {
     
     private func fetchData() {
         
-        networkService.getRepositories(request: SearchRequest(.mostPopular(topLimit))) { result in
+        fetchingService.getRepositories(request: SearchRequest(.mostPopular(topLimit))) {  [weak self] result in
             
             switch result {
             case .success(let response):
-                self.updateTableView(with: response.items)
+                self?.updateTableView(with: response.items)
             case .failure(let error):
                 print(error.localizedDescription)
             }
@@ -107,7 +107,7 @@ class RepositoriesViewController: UIViewController {
         
         DispatchQueue.main.asyncAfter(deadline: .now()) {
             self.tableView.reloadData()
-//            print("Repository List Reloaded")
+            //            print("Repository List Reloaded")
         }
     }
 }
@@ -136,8 +136,7 @@ extension RepositoriesViewController: UITableViewDelegate {
         
         // I'd use coordinator pattern for real projects
         let viewModel = viewModels[indexPath.row]
-        let repositoryAPI = RepositoryAPI()
-        let detailViewController = RepositoryDetailViewController(viewModel: viewModel, networkService: repositoryAPI)
+        let detailViewController = RepositoryDetailViewController(viewModel: viewModel, fetchingService: self.fetchingService)
         navigationController?.pushViewController(detailViewController, animated: true)
         
         // Deselect selected row

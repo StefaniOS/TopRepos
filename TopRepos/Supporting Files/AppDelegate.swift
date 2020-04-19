@@ -15,12 +15,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        // NOTE! This project does not use storyboards and creates its views via pure code instead.
         window = UIWindow(frame: UIScreen.main.bounds)
         
-        let networkService = SearchAPI()
+        let fetchingService = NetworkingService()
         
-        let repositoriesViewController = RepositoriesViewController(networkService: networkService)
+        let repositoriesViewController = RepositoriesViewController(fetchingService: fetchingService)
         let navigationViewController = UINavigationController(rootViewController: repositoriesViewController)
         window?.rootViewController = navigationViewController
         window?.backgroundColor = .white

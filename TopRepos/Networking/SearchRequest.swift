@@ -8,18 +8,18 @@
 
 import Foundation
 
-public enum SearchSort: String{
+enum SearchSort: String{
     case stars
     case forks
     case updated
 }
 
-public enum SearchOrder: String {
+enum SearchOrder: String {
     case asc
     case desc
 }
 
-public enum SearchQuery {
+enum SearchQuery {
     case mostPopular(_ top: Int = 20)
     // define more cases here e.g. trending
     
@@ -42,7 +42,7 @@ public enum SearchQuery {
     }
 }
 
-public struct SearchRequest {
+struct SearchRequest {
     let path: String
     let queryItems: [URLQueryItem]
     

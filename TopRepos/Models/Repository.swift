@@ -8,6 +8,11 @@
 
 import Foundation
 
+struct Response: Decodable {
+    let totalCount: Int
+    let items: [Repository]
+}
+
 struct Repository: Decodable {
     let id: Int
     let name: String
@@ -29,9 +34,4 @@ struct Repository: Decodable {
         case forks = "forksCount"
         case watch = "watchersCount"
     }
-}
-
-struct Response: Decodable {
-    let totalCount: Int
-    let items: [Repository]
 }
