@@ -18,8 +18,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         
         let fetchingService = NetworkingService()
+        let listViewModel = RepositoryListViewModel(fetchingService: fetchingService)
         
-        let repositoriesViewController = RepositoriesViewController(fetchingService: fetchingService)
+        let repositoriesViewController = RepositoryListViewController(viewModel: listViewModel)
         let navigationViewController = UINavigationController(rootViewController: repositoriesViewController)
         window?.rootViewController = navigationViewController
         window?.backgroundColor = .white

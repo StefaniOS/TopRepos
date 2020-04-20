@@ -1,5 +1,5 @@
 //
-//  RepositoriesViewController.swift
+//  RepositoryListViewController.swift
 //  TopRepos
 //
 //  Created by Stepan Vardanyan on 17.01.20.
@@ -8,26 +8,27 @@
 
 import UIKit
 
-class RepositoriesViewController: UIViewController {
+class RepositoryListViewController: UIViewController {
     
     fileprivate let tableView = UITableView()
     
     fileprivate let cellIdentifier = "cell"
     
-    fileprivate let fetchingService: RepositoryFetcher!
-    
-    private var viewModels = [RepositoryViewModel]()
-    
     private var repeater: Timer?
     private var repeaterTimeInterval: TimeInterval = 5
     
-    // Set the top limitation here.
-    // Please note that GitHub sets some limitations regarding the number of results per request. Use pagination for big numbers.
-    fileprivate let topLimit = 20
+    private let listViewModel: RepositoryListViewModel!
+    private var itemViewModels: [RepositoryRowViewModel] = [] {
+        didSet {
+            DispatchQueue.main.asyncAfter(deadline: .now()) {
+                self.tableView.reloadData()
+            }
+        }
+    }
     
     
-    init(fetchingService: RepositoryFetcher) {
-        self.fetchingService = fetchingService
+    init(viewModel: RepositoryListViewModel) {
+        self.listViewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -45,14 +46,16 @@ class RepositoriesViewController: UIViewController {
         setupViews()
         
         // Fetch the data from server
-        fetchData()
+        listViewModel.fetchData { [weak self] viewModels in
+            self?.itemViewModels = viewModels
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         // Run repeater to refetch the data
-        runRepeater()
+//        runRepeater()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -77,53 +80,29 @@ class RepositoriesViewController: UIViewController {
         tableView.tableFooterView = UIView()
         
         // Setup navigation bar
-        navigationItem.title = "Top \(topLimit) Repositories"
+        navigationItem.title = "Top \(RepositoryListViewModel.topLimit) Repositories"
         navigationController?.navigationBar.prefersLargeTitles = true
     }
     
-    private func runRepeater() {
-        repeater = Timer.scheduledTimer(withTimeInterval: repeaterTimeInterval, repeats: true, block: { _ in
-            self.fetchData()
-        })
-    }
-    
-    private func fetchData() {
-        
-        fetchingService.getRepositories(request: SearchRequest(.mostPopular(topLimit))) {  [weak self] result in
-            
-            switch result {
-            case .success(let response):
-                self?.updateTableView(with: response.items)
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
-        }
-    }
-    
-    private func updateTableView(with items: [Repository]) {
-        self.viewModels = items.map {
-            RepositoryViewModel(repository: $0)
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now()) {
-            self.tableView.reloadData()
-            //            print("Repository List Reloaded")
-        }
-    }
+//    private func runRepeater() {
+//        repeater = Timer.scheduledTimer(withTimeInterval: repeaterTimeInterval, repeats: true, block: { _ in
+//            self.listViewModel.fetchData()
+//        })
+//    }
 }
 
 // MARK: - Table view data source
-extension RepositoriesViewController: UITableViewDataSource {
+extension RepositoryListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModels.count
+        return itemViewModels.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier) as! RepositoryCell
         
-        let viewModel = viewModels[indexPath.row]
+        let viewModel = itemViewModels[indexPath.row]
         cell.configure(with: viewModel)
         
         return cell
@@ -131,12 +110,13 @@ extension RepositoriesViewController: UITableViewDataSource {
 }
 
 // MARK: - Table view delegate
-extension RepositoriesViewController: UITableViewDelegate {
+extension RepositoryListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        // I'd use coordinator pattern for real projects
-        let viewModel = viewModels[indexPath.row]
-        let detailViewController = RepositoryDetailViewController(viewModel: viewModel, fetchingService: self.fetchingService)
+        let rowItemViewModel = itemViewModels[indexPath.row]
+        let repositoryFetcher = NetworkingService()
+        let detailViewModel = RepositoryDetailViewModel(fetchingService: repositoryFetcher, rowItemViewModel: rowItemViewModel)
+        let detailViewController = RepositoryDetailViewController(detailViewModel: detailViewModel)
         navigationController?.pushViewController(detailViewController, animated: true)
         
         // Deselect selected row

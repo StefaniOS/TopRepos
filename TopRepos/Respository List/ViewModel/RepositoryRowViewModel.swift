@@ -2,13 +2,13 @@
 //  RepositoryViewModel.swift
 //  TopRepos
 //
-//  Created by Stepan Vardanyan on 18.01.20.
+//  Created by Stepan Vardanyan on 20.04.20.
 //  Copyright © 2020 Stepan Vardanyan. All rights reserved.
 //
 
 import Foundation
 
-struct RepositoryViewModel {
+struct RepositoryRowViewModel {
     
     let id: Int
     let name: String

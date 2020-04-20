@@ -20,7 +20,7 @@ class RepositoryCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(with viewModel: RepositoryViewModel?) {
+    func configure(with viewModel: RepositoryRowViewModel?) {
         if let viewModel = viewModel {
             textLabel?.text = "\(viewModel.name)"
             textLabel?.font = UIFont.boldSystemFont(ofSize: 18.0)

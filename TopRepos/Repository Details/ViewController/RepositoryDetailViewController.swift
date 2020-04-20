@@ -10,12 +10,7 @@ import UIKit
 
 class RepositoryDetailViewController: UIViewController {
     
-    fileprivate var viewModel: RepositoryViewModel!
-    
-    private let fetchingService: RepositoryFetcher!
-    
-    private var repeater: Timer?
-    private var repeaterTimeInterval: TimeInterval = 1000
+    fileprivate var detailViewModel: RepositoryDetailViewModel!
     
     private let avatarImageView = UIImageView()
     internal let titleLabel = UILabel()
@@ -24,9 +19,8 @@ class RepositoryDetailViewController: UIViewController {
     internal let urlLabel = UILabel()
     internal let languageLabel = UILabel()
     
-    init(viewModel: RepositoryViewModel, fetchingService: RepositoryFetcher) {
-        self.viewModel = viewModel
-        self.fetchingService =  fetchingService
+    init(detailViewModel: RepositoryDetailViewModel) {
+        self.detailViewModel = detailViewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -34,24 +28,16 @@ class RepositoryDetailViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        // Run repeater to refetch the data
-        runRepeater()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        repeater?.invalidate()
-        repeater = nil
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupViews()
-        fetchData()
+        
+        detailViewModel.fetchData { viewModel in
+            DispatchQueue.main.async {
+                self.updateContentView(with: viewModel)
+            }
+        }
     }
     
     func setupViews() {
@@ -59,41 +45,18 @@ class RepositoryDetailViewController: UIViewController {
         
         // Setup navigation bar
         navigationItem.largeTitleDisplayMode = .never
-        navigationItem.title = viewModel.name
+        navigationItem.title = detailViewModel.rowItemViewModel.name
         
         setupSubviews()
-    }
-    
-    private func runRepeater() {
-        repeater = Timer.scheduledTimer(withTimeInterval: repeaterTimeInterval, repeats: true, block: { _ in
-            self.fetchData()
-        })
-    }
-    
-    private func fetchData() {
-        
-        fetchingService.getRepository(by: viewModel.id) { [unowned self] result in
-            
-            switch result {
-            case .success(let repository):
-                self.viewModel = RepositoryViewModel(repository: repository)
-                DispatchQueue.main.async {
-                    self.updateContentView(with: self.viewModel)
-                }
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
-        }
     }
 }
 
 // MARK: - Content View
 extension RepositoryDetailViewController {
     
-    func updateContentView(with viewModel: RepositoryViewModel) {
+    func updateContentView(with viewModel: RepositoryRowViewModel) {
         
         // Fill content with data
-        // Probably it's not a good idea to fetch/relaod the image and description text so often. However, this project is for demonstration purposes only, which should be an excuse, hopefully :)
         avatarImageView.setImage(from: viewModel.owner.avatarUrl)
         titleLabel.text = viewModel.fullName
         descriptionLabel.text = viewModel.description
@@ -105,8 +68,6 @@ extension RepositoryDetailViewController {
         if let language = viewModel.language {
             languageLabel.text = "Language: \(language)"
         }
-        
-        // print("Detail View Reloaded")
     }
     
     private func setupSubviews() {
