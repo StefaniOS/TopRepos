@@ -100,6 +100,7 @@
 				8D4F930423D230FD00BFF57E /* Respository List */,
 				8D2F0176244CFBA6005A20AA /* Repository Details */,
 				8DBAC3EB23D2450F00BD124E /* Repository Model */,
+				8D2F0182244DA552005A20AA /* Repository ViewModel */,
 				8DFD7A2723D2888400B6C461 /* Views */,
 				8D07AE0B23D22D3F00E333ED /* Networking */,
 				8D53958B23D3930F0037C93E /* Extensions */,
@@ -157,7 +158,6 @@
 			isa = PBXGroup;
 			children = (
 				8D2F017C244CFC75005A20AA /* RepositoryListViewModel.swift */,
-				8D2F0180244D11AE005A20AA /* RepositoryRowViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -168,6 +168,14 @@
 				8D07AE0C23D22DE900E333ED /* RepositoriesViewController.swift */,
 			);
 			path = ViewController;
+			sourceTree = "<group>";
+		};
+		8D2F0182244DA552005A20AA /* Repository ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				8D2F0180244D11AE005A20AA /* RepositoryRowViewModel.swift */,
+			);
+			path = "Repository ViewModel";
 			sourceTree = "<group>";
 		};
 		8D4F930423D230FD00BFF57E /* Respository List */ = {

@@ -22,7 +22,7 @@ struct RepositoryRowViewModel {
     let watch: Int
     let owner: Owner
     
-    init(repository: Repository) {
+    init(repository: Response.Repository) {
         self.id = repository.id
         self.name = repository.name
         self.fullName = repository.fullName

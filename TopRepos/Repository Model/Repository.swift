@@ -13,19 +13,23 @@ struct Response: Decodable {
     let items: [Repository]
 }
 
-struct Repository: Decodable {
-    let id: Int
-    let name: String
-    let fullName: String
-    let isPrivate: Bool
-    let url: String
-    let description: String
-    let stars: Int
-    let language: String?
-    let forks: Int
-    let watch: Int
-    let owner: Owner
-    
+extension Response {
+    struct Repository: Decodable {
+        let id: Int
+        let name: String
+        let fullName: String
+        let isPrivate: Bool
+        let url: String
+        let description: String
+        let stars: Int
+        let language: String?
+        let forks: Int
+        let watch: Int
+        let owner: Owner
+    }
+}
+
+extension Response.Repository {
     enum CodingKeys : String, CodingKey {
         case id, name, fullName, description, language, owner
         case isPrivate = "private"

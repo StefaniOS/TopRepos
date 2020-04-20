@@ -9,7 +9,7 @@
 import Foundation
 
 protocol RepositoryFetcher {
-    func getRepository(by id: Int, completion: @escaping (Result<Repository, NetworkError>) -> ())
+    func getRepository(by id: Int, completion: @escaping (Result<Response.Repository, NetworkError>) -> ())
     
     func getRepositories(request: SearchRequest, completion: @escaping (Result<Response, NetworkError>) -> ())
 }
@@ -49,7 +49,7 @@ extension NetworkingService {
 }
 
 extension NetworkingService: RepositoryFetcher {
-    func getRepository(by id: Int, completion: @escaping (Result<Repository, NetworkError>) -> ()) {
+    func getRepository(by id: Int, completion: @escaping (Result<Response.Repository, NetworkError>) -> ()) {
         fetch(with: components(with: id), completion: completion)
     }
     

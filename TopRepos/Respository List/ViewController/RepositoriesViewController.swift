@@ -14,9 +14,6 @@ class RepositoryListViewController: UIViewController {
     
     fileprivate let cellIdentifier = "cell"
     
-    private var repeater: Timer?
-    private var repeaterTimeInterval: TimeInterval = 5
-    
     private let listViewModel: RepositoryListViewModel!
     private var itemViewModels: [RepositoryRowViewModel] = [] {
         didSet {
@@ -51,19 +48,6 @@ class RepositoryListViewController: UIViewController {
         }
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        // Run repeater to refetch the data
-//        runRepeater()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        repeater?.invalidate()
-        repeater = nil
-    }
-    
     private func setupViews() {
         // Setup the table view
         view.addSubview(tableView)
@@ -83,12 +67,6 @@ class RepositoryListViewController: UIViewController {
         navigationItem.title = "Top \(RepositoryListViewModel.topLimit) Repositories"
         navigationController?.navigationBar.prefersLargeTitles = true
     }
-    
-//    private func runRepeater() {
-//        repeater = Timer.scheduledTimer(withTimeInterval: repeaterTimeInterval, repeats: true, block: { _ in
-//            self.listViewModel.fetchData()
-//        })
-//    }
 }
 
 // MARK: - Table view data source
